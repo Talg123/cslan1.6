@@ -108,7 +108,7 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
     });
 
     app.post('/players', async (req, res) => {
-        const { lanNumber, players, aggregate } = req.query;
+        const { lanNumber, players, aggregate } = req.body;
         const data = await allPlayers(lanNumber, players, aggregate);
         res.status(200).json(data);
     })
