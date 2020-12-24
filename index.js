@@ -104,13 +104,16 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
     app.post('/add', async (req, res) => {
         const {ids, lanNumber} = req.body;
         await receiveData(ids, lanNumber);
-        res.status(200).json('done');
+        res.status(200).json({
+            data: null,
+            message: 'Done'
+        });
     });
 
     app.post('/players', async (req, res) => {
         const { lanNumber, players, aggregate } = req.body;
         const data = await allPlayers(lanNumber, players, aggregate);
-        res.status(200).json(data);
+        res.status(200).json({data, message: 'OK'});
     })
 
     app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
