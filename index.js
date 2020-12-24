@@ -63,9 +63,10 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
             },format);
             data['k/d'] = data.kills / data.deaths;
             data.damage_avg = data.damage_avg / user.user_details.length;
-            prev[user.nickName] = data;
+            data.nickName = user.nickName;
+            prev.push(data);
             return prev;
-        },{});
+        },[]);
     }
     return usersData;
 }
