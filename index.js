@@ -60,7 +60,7 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
                     prv.fk+= obj.first_kills_ct + obj.first_kills_tt;
                     prv.oneshots+= obj.oneshots;
                     return prv;
-            },format);
+            },{...format});
             data['k/d'] = data.kills / data.deaths;
             data.damage_avg = data.damage_avg / user.user_details.length;
             data.nickName = user.nickName;
