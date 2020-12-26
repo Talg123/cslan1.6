@@ -27,4 +27,4 @@ Object.keys(models).forEach(key => {
   }
 });
  
-module.exports = { sequelize, ...models, Sequelize };
+module.exports = { sequelize, ...models, op: Sequelize.Op };
