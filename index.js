@@ -3,7 +3,7 @@ const app = express();
 const axios = require('axios').default;
 const PORT = process.env.PORT || 5000
 const url = `https://hasura.fastcup.net/v1/graphql`;
-const { sequelize, User, UserDetails } = require('./db.js');
+const { sequelize, User, UserDetails, Sequelize } = require('./db.js');
 const { format, operationName, operationName2, 
     query, query2, variables, variables2 } = require('./consts.js');
 
@@ -40,7 +40,7 @@ const allPlayers = async (lanNumber, UserID, aggregate, lanOnly = true) => {
     if (lanNumber) whereUserDetails.lanNumber = lanNumber;
     else if(lanOnly) {
         whereUserDetails.lanNumber = {
-            [sequelize.Op.not]: 0
+            [Sequelize.Op.not]: 0
         };
     }
     else if(!lanOnly) {
