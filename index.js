@@ -32,7 +32,6 @@ const receiveData = async (ids, lanNumber) => {
             }
         }
     }
-    return sortable;
 }
 
 const allPlayers = async (lanNumber, UserID, aggregate, lanOnly = true) => {
