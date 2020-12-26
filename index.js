@@ -64,6 +64,7 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
             data['k/d'] = data.kills / data.deaths;
             data.damage_avg = data.damage_avg / user.user_details.length;
             data.nickName = user.nickName;
+            data.userID = user.UserID;
             prev.push(data);
             return prev;
         },[]);
