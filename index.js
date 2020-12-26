@@ -35,11 +35,20 @@ const receiveData = async (ids, lanNumber) => {
     return sortable;
 }
 
-const allPlayers = async (lanNumber, UserID, aggregate) => {
+const allPlayers = async (lanNumber, UserID, aggregate, lanOnly) => {
     const where = {};
     const whereUserDetails = {};
     if (lanNumber) whereUserDetails.lanNumber = lanNumber;
+    else if(lanOnly) {
+        whereUserDetails.lanNumber = {
+            [sequelize.Op.not]: 0
+        };
+    }
+    else if(!lanOnly) {
+        whereUserDetails.lanNumber = 0;
+    }
     if (UserID) where.UserID = UserID;
+
     const usersData = await User.findAll({
         where,
         include: {
@@ -90,8 +99,8 @@ const allPlayers = async (lanNumber, UserID, aggregate) => {
     });
 
     app.post('/players', async (req, res) => {
-        const { lanNumber, players, aggregate } = req.body;
-        const data = await allPlayers(lanNumber, players, aggregate);
+        const { lanNumber, players, aggregate, lanOnly } = req.body;
+        const data = await allPlayers(lanNumber, players, aggregate, lanOnly);
         res.status(200).json({data, message: 'OK'});
     })
 
