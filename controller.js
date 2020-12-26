@@ -9,10 +9,8 @@ const receiveData = async (ids, lanNumber) => {
     for (const id of ids) {
         playerData.id = id;
         matchData.matchID = id;
-        const { data } = await axios.post(url, {query: queryPlayer, variables: playerData, operationName: GET_MATCH});
-        const { data: data2 } = await axios.post(url, {query: queryStats, variables: matchData, operationName: GET_MATCH_MEMBER_STATS });
-        const members = data.data.match.members;
-        const members2 = data2.data.match_member_map_stats;
+        const members = await fetchFromFastCup();
+        const members2 = await fetchFromFastCup(false);
         for (const member of members) {
             const member2 = members2.find(user => member.private.user.id === user.user_id);
             const user = await User.findOne({where: {UserID: member2.user_id}});
@@ -53,29 +51,40 @@ const allPlayers = async (lanNumber, UserID, aggregate, lanOnly = true) => {
         }
     });
     if (aggregate && usersData && usersData.length) {
-        return usersData.reduce((prev, user) => {
-            const data = user.user_details.reduce((prv, obj) => {
-                    prv.kills+= obj.kills;
-                    prv.deaths+= obj.deaths;
-                    prv.assists+= obj.assists;
-                    prv.damage_avg+= obj.damage_avg;
-                    prv.headshots+= obj.headshots;
-                    prv.wallbangs+= obj.wallbangs;
-                    prv.fd+= obj.first_deaths_ct + obj.first_deaths_tt;
-                    prv.fk+= obj.first_kills_ct + obj.first_kills_tt;
-                    prv.oneshots+= obj.oneshots;
-                    return prv;
-            },{...format});
-            data['k/d'] = data.kills / data.deaths;
-            data.damage_avg = data.damage_avg / user.user_details.length;
-            data.nickName = user.nickName;
-            data.userID = user.UserID;
-            prev.push(data);
-            return prev;
-        },[]);
+        return aggregateData(usersData);
     }
     return usersData;
 }
+
+const fetchFromFastCup = async (match = true) => {
+    if (match) {
+        const { data } = await axios.post(url, {query: queryPlayer, variables: playerData, operationName: GET_MATCH});
+        return data.data.match.members;
+    }
+    const { data } = await axios.post(url, {query: queryStats, variables: matchData, operationName: GET_MATCH_MEMBER_STATS });
+    return data.data.match_member_map_stats;
+}
+
+const aggregateData = (usersData) => usersData.reduce((prev, user) => {
+    const data = user.user_details.reduce((prv, obj) => {
+            prv.kills+= obj.kills;
+            prv.deaths+= obj.deaths;
+            prv.assists+= obj.assists;
+            prv.damage_avg+= obj.damage_avg;
+            prv.headshots+= obj.headshots;
+            prv.wallbangs+= obj.wallbangs;
+            prv.fd+= obj.first_deaths_ct + obj.first_deaths_tt;
+            prv.fk+= obj.first_kills_ct + obj.first_kills_tt;
+            prv.oneshots+= obj.oneshots;
+            return prv;
+    },{...format});
+    data['k/d'] = data.kills / data.deaths;
+    data.damage_avg = data.damage_avg / user.user_details.length;
+    data.nickName = user.nickName;
+    data.userID = user.UserID;
+    prev.push(data);
+    return prev;
+},[]);
 
 module.exports = {
     allPlayers,
