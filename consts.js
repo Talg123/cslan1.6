@@ -22,6 +22,7 @@ const format = {
 }
 const ids = [3689645, 3689723, 3689388, 3689321, 3688819, 3688707, 3688090, 3687984, 3687032, 3686961, 3686238, 3686165];
 const GET_MATCH = "GetMatch";
+const HOUR_REGEX = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 
 module.exports = {
     queryPlayer,
@@ -30,5 +31,6 @@ module.exports = {
     queryStats,
     GET_MATCH,
     GET_MATCH_MEMBER_STATS,
-    format
+    format,
+    HOUR_REGEX
 }

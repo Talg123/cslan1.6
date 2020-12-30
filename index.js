@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5000
 const { sequelize } = require('./db.js');
-const { allPlayers, receiveData } = require('./controller.js');
+const { HOUR_REGEX } = require('./consts.js');
+const { allPlayers, receiveData, createNewGame } = require('./controller.js');
 
 (async () => {
     try {
@@ -27,6 +28,25 @@ const { allPlayers, receiveData } = require('./controller.js');
         const data = await allPlayers(lanNumber, players, aggregate, lanOnly);
         res.status(200).json({data, message: 'OK'});
     })
+
+    app.post('/game', async (req, res) => {
+        const { time } = req.body;
+        if (!time || HOUR_REGEX.test(time)) {
+            return res.status(400).json({data: null, message: 'Invalid time format'});
+        }
+        try {
+            const response = await createNewGame(time);
+            res.status(200).json({data: response, message: 'Game created'});
+        } catch (error) {
+            res.status(500).json({data: {
+                GameID: error.message
+            }, message: 'Game is already active, close it first'});
+        }
+    });
+
+    app.post('/game/add', async (req, res) => {
+        const { playerID } = req.body;
+    });
 
     app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 })();

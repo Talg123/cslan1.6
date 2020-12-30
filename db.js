@@ -3,6 +3,8 @@ const pg = require('pg');
 pg.defaults.ssl = { rejectUnauthorized: false }
 const UserModel = require('./user');
 const UserDetailsModel = require('./user-details');
+const GameRegistersModel = require('./game-register.js');
+const GameModel = require('./game.js');
 const config = process.env;
 const sequelize = new Sequelize(
     config.DATABASE_DB,
@@ -18,7 +20,9 @@ const sequelize = new Sequelize(
  
 const models = {
   User: UserModel(sequelize, Sequelize.DataTypes),
-  UserDetails: UserDetailsModel(sequelize, Sequelize.DataTypes)
+  UserDetails: UserDetailsModel(sequelize, Sequelize.DataTypes),
+  GameRegister: GameRegistersModel(sequelize, Sequelize.DataTypes),
+  Game: GameModel(sequelize, Sequelize.DataTypes),
 };
  
 Object.keys(models).forEach(key => {

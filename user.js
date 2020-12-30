@@ -13,8 +13,9 @@ const user = (sequelize, DataTypes) => {
    
     User.associate = models => {
       User.hasMany(models.UserDetails);
+      User.hasMany(models.GameRegister);
     };
-   
+
     return User;
   };
    

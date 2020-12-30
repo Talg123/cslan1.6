@@ -2,7 +2,7 @@ const { format, GET_MATCH, GET_MATCH_MEMBER_STATS,
     queryPlayer, queryStats, playerData, matchData } = require('./consts.js');
 const url = `https://hasura.fastcup.net/v1/graphql`;
 const axios = require('axios').default;
-const { User, UserDetails, op } = require('./db.js');
+const { User, UserDetails, op, Game, GameRegister } = require('./db.js');
 
 
 const receiveData = async (ids, lanNumber) => {
@@ -56,6 +56,25 @@ const allPlayers = async (lanNumber, UserID, aggregate, lanOnly = true) => {
     return usersData;
 }
 
+const createNewGame = async (time) => {
+    const gameActive = await Game.findOne({where: { Active: true }});
+    if (gameActive) 
+        throw new Error(gameActive.GameID);
+    const gameID = await Game.create({
+        Time: time,
+        Active: true
+    });
+
+    return gameID;
+}
+
+const registerPlayerToGame = async (playerID) => {
+    const gameActive = await Game.findOne({where: { Active: true }});
+    if (!gameActive)
+        return 'No active game';
+    await GameRegister({  })
+}
+
 const fetchFromFastCup = async (match = true) => {
     if (match) {
         const { data } = await axios.post(url, {query: queryPlayer, variables: playerData, operationName: GET_MATCH});
@@ -88,5 +107,7 @@ const aggregateData = (usersData) => usersData.reduce((prev, user) => {
 
 module.exports = {
     allPlayers,
-    receiveData
+    receiveData,
+    createNewGame,
+    registerPlayerToGame
 }
