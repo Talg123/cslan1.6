@@ -5,7 +5,6 @@ const GameRegister = (sequelize, DataTypes) => {
         },
     },
     {
-        sync: true,
         indexes: [
             {
                 unique: true,

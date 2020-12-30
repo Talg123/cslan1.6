@@ -24,6 +24,14 @@ const ids = [3689645, 3689723, 3689388, 3689321, 3688819, 3688707, 3688090, 3687
 const GET_MATCH = "GetMatch";
 const HOUR_REGEX = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 
+const extractDateTime = (date) => {
+    const operator = date.indexOf('-') !== -1 ? '-' : '/';
+    const splittedDate = date.split(operator);
+    const setDate = `${splittedDate[1]}-${splittedDate[0]}-${splittedDate[2]}`;
+    const dateObject = new Date(setDate).getTime();
+    return dateObject;
+}
+
 module.exports = {
     queryPlayer,
     playerData,
@@ -32,5 +40,6 @@ module.exports = {
     GET_MATCH,
     GET_MATCH_MEMBER_STATS,
     format,
-    HOUR_REGEX
+    HOUR_REGEX,
+    extractDateTime
 }

@@ -14,6 +14,7 @@ const user = (sequelize, DataTypes) => {
     User.associate = models => {
       User.hasMany(models.UserDetails);
       User.hasMany(models.GameRegister);
+      User.belongsToMany(models.Lan, {through: models.LanPlayerRegister, foreignKey: 'UserID'});
     };
 
     return User;

@@ -1,8 +1,9 @@
 const { format, GET_MATCH, GET_MATCH_MEMBER_STATS, 
-    queryPlayer, queryStats, playerData, matchData } = require('./consts.js');
+    queryPlayer, queryStats, playerData, matchData, extractDateTime } = require('./consts.js');
 const url = `https://hasura.fastcup.net/v1/graphql`;
 const axios = require('axios').default;
-const { User, UserDetails, op, Game, GameRegister } = require('./db.js');
+const { User, UserDetails, op, Game, GameRegister, 
+    Lan, LanPlayerRegister } = require('./db.js');
 
 
 const receiveData = async (ids, lanNumber) => {
@@ -75,6 +76,51 @@ const registerPlayerToGame = async (playerID) => {
     await GameRegister({  })
 }
 
+const createNewLan = async (date) => {
+    const dateObject = extractDateTime(date);
+    const lastLan = await Lan.findOne({order: [['LanID', 'DESC']]});
+    if (lastLan) {
+        const lastLanDateObject = extractDateTime(lastLan.Time);
+        if ((dateObject <= lastLanDateObject) || (Date.now() >= lastLanDateObject)) {
+            throw new Error('Lan already running');
+        }
+    }
+    const newLan = await Lan.create({Time: date});
+    return newLan;
+};
+
+const registerPlayerToLan = async(playerID, nickName) => {
+    const player = await User.findOne({where: {UserID: playerID}});
+    if (!player)
+        await User.create({UserID: playerID, nickName});
+    else 
+        await User.update({nickName}, { where: {
+                UserID: playerID
+            }
+        });
+    const lastLan = await Lan.findOne({order: [['LanID', 'DESC']]});
+    const lastLanDateObject = extractDateTime(lastLan.Time);
+    if (Date.now() > lastLanDateObject) {
+        throw new Error('No Lan to register to');
+    }
+    await LanPlayerRegister.create({UserID: playerID, LanID: lastLan.LanID});
+    return;
+}
+
+const lastLanAndPlayers = async () => {
+    const lastLan = await Lan.findOne({
+        order: [['LanID', 'DESC']],
+        include: [
+            {
+                model: User, 
+                attributes: ['UserID', 'nickName']
+            }
+        ]
+    });
+
+    return lastLan;
+}
+
 const fetchFromFastCup = async (match = true) => {
     if (match) {
         const { data } = await axios.post(url, {query: queryPlayer, variables: playerData, operationName: GET_MATCH});
@@ -109,5 +155,8 @@ module.exports = {
     allPlayers,
     receiveData,
     createNewGame,
-    registerPlayerToGame
+    registerPlayerToGame,
+    createNewLan,
+    registerPlayerToLan,
+    lastLanAndPlayers
 }
