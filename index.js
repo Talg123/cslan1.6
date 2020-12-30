@@ -70,7 +70,7 @@ const { allPlayers, receiveData, createNewGame,
         }
         try {
             await registerPlayerToLan(playerID, nickName);
-            res.status(200).json({lanID: newLan});
+            res.status(200).json({data: {}, message: 'Registered player successfully'});
         } catch (error) {
             res.status(500).json({data: {
             }, message: error.message});

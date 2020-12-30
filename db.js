@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const pg = require('pg');
-// pg.defaults.ssl = { rejectUnauthorized: false }
+pg.defaults.ssl = { rejectUnauthorized: false }
 const UserModel = require('./user');
 const UserDetailsModel = require('./user-details');
 const GameRegistersModel = require('./game-register.js');
