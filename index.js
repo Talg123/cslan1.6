@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5000
-const { sequelize } = require('./db.js');
+const { sequelize, LanPlayerRegister } = require('./db.js');
 const { HOUR_REGEX } = require('./consts.js');
 const { allPlayers, receiveData, createNewGame, 
     createNewLan, registerPlayerToLan, lastLanAndPlayers} = require('./controller.js');
@@ -47,6 +47,11 @@ const { allPlayers, receiveData, createNewGame,
 
     app.post('/game/add', async (req, res) => {
         const { playerID } = req.body;
+    });
+
+    app.delete('/delete/players', async (req, res) => {
+        await LanPlayerRegister.destroy();
+        res.json({});
     });
 
     app.post('/lan', async (req, res) => {
